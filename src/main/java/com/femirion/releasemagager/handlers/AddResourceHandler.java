@@ -22,6 +22,6 @@ public class AddResourceHandler {
 
         return ServerResponse.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromProducer(resource.map(Resource::getVersion), Integer.class));
+                .body(BodyInserters.fromProducer(resource.map(Resource::version), Integer.class));
     }
 }

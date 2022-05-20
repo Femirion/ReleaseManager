@@ -15,7 +15,7 @@ public class SimpleResourceStorage implements ResourceStorage {
     @Override
     public Resource addResource(Resource resource) {
         serviceMap.merge(
-                resource.getVersion(),
+                resource.version(),
                 List.of(resource),
                 (oldList, newList) -> {
                     var result = new ArrayList<>(oldList);
