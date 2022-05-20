@@ -11,17 +11,25 @@ import java.util.*;
 @Service
 public class SimpleResourceStorage implements ResourceStorage {
     private final Map<String, Map<Integer, List<Resource>>> serviceMap = new HashMap<>();
+    private final Map<String, Integer> correspondSystemVersions = new HashMap<>();
+    private int systemVersionNumber = 0;
 
     @Override
-    public Resource addResource(Resource resource) {
+    public int addResource(Resource resource) {
+        var currentVersion = correspondSystemVersions.getOrDefault(resource.name(), -1);
+        if (systemVersionNumber != currentVersion) {
+            systemVersionNumber++;
+            correspondSystemVersions.put(resource.name(), systemVersionNumber);
+        }
+
         serviceMap.merge(
                 resource.name(),
-                Map.of(resource.version(), List.of(resource)),
+                Map.of(systemVersionNumber, List.of(resource)),
                 (oldMap, newMap) -> {
                     var result = new HashMap<>(newMap);
                     for (var element : oldMap.entrySet()) {
                         result.merge(
-                                element.getKey(),
+                                systemVersionNumber,
                                 element.getValue(),
                                 (oldElement, newElement) -> {
                                     newElement.addAll(oldElement);
@@ -32,7 +40,7 @@ public class SimpleResourceStorage implements ResourceStorage {
                     return result;
                 });
         log.debug("resource was added. resource={}", resource);
-        return resource;
+        return systemVersionNumber;
     }
 
     @Override
