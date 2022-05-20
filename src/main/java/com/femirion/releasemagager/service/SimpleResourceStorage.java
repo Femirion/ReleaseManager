@@ -10,16 +10,25 @@ import java.util.*;
 @Slf4j
 @Service
 public class SimpleResourceStorage implements ResourceStorage {
-    private final Map<Integer, List<Resource>> serviceMap = new HashMap<>();
+    private final Map<String, Map<Integer, List<Resource>>> serviceMap = new HashMap<>();
 
     @Override
     public Resource addResource(Resource resource) {
         serviceMap.merge(
-                resource.version(),
-                List.of(resource),
-                (oldList, newList) -> {
-                    var result = new ArrayList<>(oldList);
-                    result.addAll(newList);
+                resource.name(),
+                Map.of(resource.version(), List.of(resource)),
+                (oldMap, newMap) -> {
+                    var result = new HashMap<>(newMap);
+                    for (var element : oldMap.entrySet()) {
+                        result.merge(
+                                element.getKey(),
+                                element.getValue(),
+                                (oldElement, newElement) -> {
+                                    newElement.addAll(oldElement);
+                                    return newElement;
+                                });
+                        return newMap;
+                    }
                     return result;
                 });
         log.debug("resource was added. resource={}", resource);
@@ -28,13 +37,18 @@ public class SimpleResourceStorage implements ResourceStorage {
 
     @Override
     public Flux<Resource> getAllByVersion(int version) {
-        return Flux.fromIterable(serviceMap.getOrDefault(version, new ArrayList<>()));
+        return Flux.fromIterable(serviceMap.values().stream()
+                .map(e -> e.getOrDefault(version, new ArrayList<>()))
+                .flatMap(Collection::stream)
+                .toList());
     }
 
     @Override
     public Flux<Resource> getAllResource() {
         return Flux.fromIterable(serviceMap.values()
                 .stream()
+                .map(Map::values)
+                .flatMap(Collection::stream)
                 .flatMap(Collection::stream)
                 .toList()
         );
