@@ -1,11 +1,10 @@
 package com.femirion.releasemagager.service;
 
 import com.femirion.releasemagager.domain.Resource;
-
-import java.util.Collection;
+import reactor.core.publisher.Flux;
 
 public interface ResourceStorage {
     Resource addResource(Resource resource);
-    Collection<Resource> getAllByName();
-    Collection<Resource> getAllResource();
+    Flux<Resource> getAllByVersion(int version);
+    Flux<Resource> getAllResource();
 }

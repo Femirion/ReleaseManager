@@ -3,19 +3,23 @@ package com.femirion.releasemagager.service;
 import com.femirion.releasemagager.domain.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
 public class SimpleResourceStorage implements ResourceStorage {
-    private final Map<String, List<Integer>> serviceMap = new HashMap<>();
+    private final Map<Integer, List<Resource>> serviceMap = new HashMap<>();
 
     @Override
     public Resource addResource(Resource resource) {
         serviceMap.merge(
-                resource.getName(),
-                List.of(resource.getVersion()),
+                resource.getVersion(),
+                List.of(resource),
                 (oldList, newList) -> {
                     var result = new ArrayList<>(oldList);
                     result.addAll(newList);
@@ -26,12 +30,12 @@ public class SimpleResourceStorage implements ResourceStorage {
     }
 
     @Override
-    public Collection<Resource> getAllByName() {
-        return null;
+    public Flux<Resource> getAllByVersion(int version) {
+        return Flux.fromIterable(serviceMap.getOrDefault(version, new ArrayList<>()));
     }
 
     @Override
-    public Collection<Resource> getAllResource() {
-        return null;
+    public Flux<Resource> getAllResource() {
+        return Flux.empty();
     }
 }

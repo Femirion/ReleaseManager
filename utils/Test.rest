@@ -1,0 +1,22 @@
+POST http://localhost:8080/deploy
+Content-Type: application/json
+
+{ "name": "Service A", "version": 2  }
+
+#####
+
+POST http://localhost:8080/deploy
+Content-Type: application/json
+
+{ "name": "Service B", "version": 3  }
+
+#####
+
+POST http://localhost:8080/deploy
+Content-Type: application/json
+
+{ "name": "Service C", "version": 2  }
+
+#####
+
+GET http://localhost:8080/services?systemVersion=2&size=1&page=0

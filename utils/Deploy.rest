@@ -1,4 +1,4 @@
 POST http://localhost:8080/deploy
 Content-Type: application/json
 
-{ "name": "Service A", "version": 3  }
+{ "name": "Service B", "version": 2  }
