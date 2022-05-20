@@ -5,10 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -36,6 +33,10 @@ public class SimpleResourceStorage implements ResourceStorage {
 
     @Override
     public Flux<Resource> getAllResource() {
-        return Flux.empty();
+        return Flux.fromIterable(serviceMap.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .toList()
+        );
     }
 }
